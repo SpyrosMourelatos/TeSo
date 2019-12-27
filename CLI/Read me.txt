@@ -6,4 +6,4 @@ $ npm install xmlhttprequest
 
 Missing user creation/ modification
 Missing parsing of server response
-
+Missing groupID to replace "XXX"
