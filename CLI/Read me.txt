@@ -1,9 +1,0 @@
-WORK IN PROGRESS
-
-Requires installation of "commander" and "xmlhttprequest"
-$ npm install commander
-$ npm install xmlhttprequest
-
-Missing user creation/ modification
-Missing parsing of server response
-Missing groupID to replace "XXX"
