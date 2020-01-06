@@ -1,30 +1,34 @@
-CREATE DATABASE IF NOT EXISTS `te_so` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `te_so`;
-CREATE TABLE IF NOT EXIST `ActualTotalLoad`(
-Id;
-EntityCreatedAt;
-EntityModifiedAt;
-ActionTaskID;
-Status;
-Year;
-Month;
-Day;
-DateTime;
-AreaName;
-UpdateTime;
-TotalLoadValue;
-AreaTypeCodeId;
-AreaCodeId;
-ResolutionCodeId;
-MapCodeId;
-RowHash;)
+CREATE DATABASE IF NOT EXISTS `te_so`; 
 
-BULK INSERT SchoolsTemp
-FROM 'C:\CSVData\Schools.csv'
-WITH
-(
-    FIRSTROW = 2,
-    FIELDTERMINATOR = ',',  --CSV field delimiter
-    ROWTERMINATOR = '\n',   --Use to shift the control to next row
-    TABLOCK
-)
+USE `te_so`;
+
+DROP TABLE ActualTotalLoad;
+CREATE TABLE IF NOT EXISTS ActualTotalLoad(
+Id VARCHAR(20) NOT NULL PRIMARY KEY,
+EntityCreatedAt CHAR(34) NOT NULL,
+EntityModifiedAt CHAR(34) NOT NULL Default 0,
+ActionTaskID BIGINT(20) ,
+Statuse  Varchar(4),
+Yeare int(11) NOT NULL ,
+Monthe int(11) NOT NULL,
+Daye int(11) NOT NULL,
+DateTimee VARCHAR(30) NOT NULL,
+AreaName VARCHAR(200),
+UpdateTime VARCHAR(30) NOT NULL,
+TotalLoadValue DECIMAL(24,2) NOT NULL,
+AreaTypeCodeId INT(11),
+AreaCodeId INT(11),
+ResolutionCodeId INT(11),
+MapCodeId INT(11),
+RowHash CHAR(255)
+);
+
+INSERT INTO ActualTotalLoad
+VALUES (55998191,"2019-10-01 13:46:36.7610129 +00:00","2019-10-01 13:46:36.7610129 +00:00",312126,"NULL",2018,1,4,"2018-01-04 05:30:00.0000000","DE-AT-LU","2018-04-01 04:01:28.0000000",67928.13,2,55448,1,7,"B82C7EFD-60F2F573-C96FC45E-D1C6BDCF-90931B6E-F597F424-ED2AB8DC-417B2132-1DCDCEFE-7AA96D2A-994E7E4A-48B611ED-148827AF-B30EF809-95994DB3-033F3720
+");
+-- BULK INSERT ActualTotalLoad FROM '/A.csv' WITH (FORMAT='CSV');
+LOAD DATA LOCAL INFILE '/home/dimitra/Act.csv'
+replace INTO TABLE ActualTotalLoad 
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
