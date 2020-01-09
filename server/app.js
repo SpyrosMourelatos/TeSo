@@ -47,7 +47,9 @@ app.get(base+":query/:area/:resolution/:durationOption/:year([0-9]{4})?:month(-[
     var flag=true;
     var params=req.params;
     [flag,params]=helpers.parser(params);
-    res.send([params,req.params]);
+    var type=helpers.questionDecoder(params);
+    helpers.queries(params,type)
+    res.send([params,req.params,type]);
     connection.query('SELECT "accessible" AS solution',function(err,res,fields){
         if (err) {console.log("Could not connect to SQL database.")} 
         else {console.log("Database is :" + res[0].solution)}

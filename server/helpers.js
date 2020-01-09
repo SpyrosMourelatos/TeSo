@@ -1,6 +1,15 @@
 
 
 module.exports ={
+    //compare a string with a list of strings and returns the index if they equal else return false
+    compareString : function(str,list) {
+        var i = 0
+        for(i; i<list.length; i++) 
+        {    
+        if(str=== list[i]) return [i+1,list[i]];
+        }
+        return [false,false]
+    },
     //Thid func takes strings and checks if they are inegers in a range
     checkNumerics: function checkNumerics(maybeNumber,min,max)
     {
@@ -28,17 +37,14 @@ module.exports ={
         var ret={};
         if ( 'query' in params)
         {
-            if (   params["query"] === "ActualTotalLoad" )
-            {Object.assign(ret,{query :1 })}
-            else if ( params["query"] === "AggregatedGenerationPerType" )
-            {Object.assign(ret,{query :2 })}
-            else if (params["query"] === "DayAheadTotalLoadForecast")
-            {Object.assign(ret,{query :3 })}
-            else 
+            //Sory for the big line it will get smaller
+            var [index,elem] = module.exports.compareString(params["query"],["ActualTotalLoad","AggregatedGenerationPerType","DayAheadTotalLoadForecast"])
+            if (index===false)
             {
-                ret[1]="Query Paramter should be one of the three values:ActualTotalLoad";
+                ret[1]="Query Paramter should be one of the three values:ActualTotalLoad,AggregatedGenerationPerType,DayAheadTotalLoadForecast";
                 return [false,ret];
             }
+            Object.assign(ret,{query :index })
         }
         if ('area' in params)
         {
@@ -46,60 +52,87 @@ module.exports ={
         }
         if ('resolution' in params) 
         {
-            if (   params["resolution"] === "PT60M" )
-            {Object.assign(ret,{resolution :1 })}
-            else if ( params["resolution"] === "PT30M" )
-            {Object.assign(ret,{resolution :2 })}
-            else if (params["resolution"] === "PT15M")
-            {Object.assign(ret,{resolution :3 })}
-            else 
+            var [index,elem] = module.exports.compareString(params["resolution"],["PT60M","PT30M","PT15M"])
+            if (index===false)
             {
                 ret[1]="Resolution Paramter should be one of the three values:PT60M,PT30M,PT15M";
                 return [false,ret];
             }
+            Object.assign(ret,{resolution :index })
         }
         if ('durationOption' in params) 
         {
-            if (   params["durationOption"] === "date" )
-            {Object.assign(ret,{durationOption :1 })}
-            else if ( params["durationOption"] === "month" )
-            {Object.assign(ret,{durationOption :2 })}
-            else if (params["durationOption"] === "year")
-            {Object.assign(ret,{durationOption :3 })}
-            else 
+            var [index,elem] = module.exports.compareString(params["durationOption"],["date","month","year"])
+            console.log(index)
+            if (index===false)
             {
+                console.log("If its false i am in")
                 ret[1]="Duration Paramter should be one of the three values:year,month,day";
                 return [false,ret];
             }
+            Object.assign(ret,{durationOption:elem })
+
         }
-        if ('year' in params)
+        if (!(  params['year'] ===undefined))
         {
             const temp=module.exports.checkNumerics(params["year"],1900,4200)
             if (temp[1]==false) {return [false,temp[0]] ;}
-            Object.assign(ret,{ Year : temp[0] } )
+            Object.assign(ret,{ year : temp[0] } )
         }
-        if ('month' in params)
+        if (!(  params['month'] ===undefined))
         {
             const temp=module.exports.checkNumerics(params["month"],0,13)
             if (temp[1]==false) {return [false,temp[0]] ;}
-            Object.assign(ret,{ Month : temp[0] } )
+            Object.assign(ret,{ month : temp[0] } )
         }
-        if ('day' in params)
+        if (!(  params['day'] ===undefined))
         {
             const temp=module.exports.checkNumerics(params["day"],0,32)
             if (temp[1]==false) {return [false,temp[0]] ;}
-            Object.assign(ret,{ Day : temp[0] } )
+            Object.assign(ret,{ day : temp[0] } )
         }
-        if ('format' in params)
-        {
-            if (params["format"]==="&format=json")
-            Object.assign(ret,{format:1})
-            else if (params["format"]==="&format=csv")
-            Object.assign(ret,{format:2})
-        }
-        else Object.assign(ret,{format:1})
-
+        if (params["format"]==="&format=csv") Object.assign(ret,{format:1})
+        else  Object.assign(ret,{format:0})
         return [true,ret];
+    },
+
+    questionDecoder :function (params)
+    { 
+        var dur=params["durationOption"]
+        const hasY=('year' in params)
+        const hasM=('month' in params)
+        const hasD = ('date' in params) 
+        
+
+        if (params["durationOption"]==="year" && ( !(hasY) || hasM || hasD ) ) return "Query needs only year"
+        else if (params["durationOption"]==="months" &&  ( !(hasY) || !(hasM) || hasD )) return "Query needs year and month"
+        else if (params["durationOption"]==="date" &&  ( !(hasY) || !(hasM) || !(hasD) )) return "Query needs year and month"
+        else return params["query"]+params["durationOption"]
+    },
+
+    queries : function(params,type)
+    {
+        //IMPLEMENTATION IS FOR GIRLS
+        if  (type=="1year")
+            {}
+        else if (type=="1month")
+            {}
+        else if (type=="1date")
+            {}
+        else if (type=="2year")
+            {}
+        else if (type=="2month")
+            {}
+       else if (type=="2date")
+            {} 
+        else if (type=="3year")
+            {}
+        else if (type=="3month")
+            {}
+       else if (type=="3date")
+            {} 
+                
+        
     }
 
 }
