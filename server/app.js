@@ -42,21 +42,57 @@ var base="/energy/api/";
 
 
 //RESPONSES
-app.get(base+"ActualTotalLoad/:area/:resolution/:year/:month/:day",function(req,res)
-    {
+
+app.get(base+":query/:area/:resolution/:durationOption/:year([0-9]{4})?:month(-[0-9]{2})?:day(-[0-9]{2})?:format(\&format=[a-z]{3,4})?",function(req,res){
+    var flag=true;
+    var params=req.params;
+    [flag,params]=helpers.parser(params);
+    res.send([params,req.params]);
+    connection.query('SELECT "accessible" AS solution',function(err,res,fields){
+        if (err) {console.log("Could not connect to SQL database.")} 
+        else {console.log("Database is :" + res[0].solution)}
+    });
+});
+
+app.get(base+":query/:area/:resolution/:durationOption",function(req,res){
         var flag=true;
         var params=req.params;
         [flag,params]=helpers.parser(params)
+        res.send(["Query should contain a date type YYYY-MM-DD",params])
+}); 
 
-        res.send([flag,params]);
-        connection.query('SELECT "accessible" AS solution',function(err,res,fields){
-            if (err) {console.log("Could not connect to SQL database.")} 
-            else {console.log("Database is :" + res[0].solution)}
+app.get(base+":query/:area/:resolution",function(req,res){
+        var flag=true;
+        var params=req.params;
+        [flag,params]=helpers.parser(params)
+        res.send(["Query should contain a duration field",params])
+});
+app.get(base+":query/:area",function(req,res){
+        var flag=true;
+        var params=req.params;
+        [flag,params]=helpers.parser(params)
+        res.send(["Query should contain resolution field",params])
+});
+app.get(base+":query",function(req,res){
+    var flag=true;
+    var params=req.params;
+    [flag,params]=helpers.parser(params)
+    res.send(["Query should contain area field",params])
+});
 
-        });
-    })
-    app.get("*",function(req,res){res.send("Error 404 : Page not found")});
+app.get(base,function(req,res)
+    {
+        res.send("Welcome to our page!")
+    }
+    )
+app.get("*",function(req,res)
+{
+    var flag=true;
+    var params=req.params;
+    [flag,params]=helpers.parser(params)
+    res.send(["Error 404 : Page not found",params])
+});
 
-    app.listen(8765, function(){
-        console.log("Server Listening to port 8765");
-    }).on('error',console.log)
+app.listen(8765, function(){
+    console.log("Server Listening to port 8765");
+}).on('error',console.log)

@@ -4,7 +4,8 @@ module.exports ={
     //Thid func takes strings and checks if they are inegers in a range
     checkNumerics: function checkNumerics(maybeNumber,min,max)
     {
-        maybeNumber=parseFloat(maybeNumber)
+        maybeNumber=parseFloat(maybeNumber);
+        maybeNumber=Math.abs(maybeNumber);
         if (Number.isInteger(maybeNumber))
         {
             if (maybeNumber <= min || maybeNumber >=max)
@@ -25,6 +26,24 @@ module.exports ={
     parser : function (params)
     {
         var ret={};
+        if ( 'query' in params)
+        {
+            if (   params["query"] === "ActualTotalLoad" )
+            {Object.assign(ret,{query :1 })}
+            else if ( params["query"] === "AggregatedGenerationPerType" )
+            {Object.assign(ret,{query :2 })}
+            else if (params["query"] === "DayAheadTotalLoadForecast")
+            {Object.assign(ret,{query :3 })}
+            else 
+            {
+                ret[1]="Query Paramter should be one of the three values:ActualTotalLoad";
+                return [false,ret];
+            }
+        }
+        if ('area' in params)
+        {
+            Object.assign(ret,{area :params["area"] })
+        }
         if ('resolution' in params) 
         {
             if (   params["resolution"] === "PT60M" )
@@ -36,6 +55,20 @@ module.exports ={
             else 
             {
                 ret[1]="Resolution Paramter should be one of the three values:PT60M,PT30M,PT15M";
+                return [false,ret];
+            }
+        }
+        if ('durationOption' in params) 
+        {
+            if (   params["durationOption"] === "date" )
+            {Object.assign(ret,{durationOption :1 })}
+            else if ( params["durationOption"] === "month" )
+            {Object.assign(ret,{durationOption :2 })}
+            else if (params["durationOption"] === "year")
+            {Object.assign(ret,{durationOption :3 })}
+            else 
+            {
+                ret[1]="Duration Paramter should be one of the three values:year,month,day";
                 return [false,ret];
             }
         }
@@ -57,6 +90,15 @@ module.exports ={
             if (temp[1]==false) {return [false,temp[0]] ;}
             Object.assign(ret,{ Day : temp[0] } )
         }
+        if ('format' in params)
+        {
+            if (params["format"]==="&format=json")
+            Object.assign(ret,{format:1})
+            else if (params["format"]==="&format=csv")
+            Object.assign(ret,{format:2})
+        }
+        else Object.assign(ret,{format:1})
+
         return [true,ret];
     }
 
