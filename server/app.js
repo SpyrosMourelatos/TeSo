@@ -30,16 +30,14 @@ app.use(session({
 
 
 //This func takes a request and two possible responses and it decides which to send back based on client
-function serveCorrectClient(req,cliRes,browserRes)
-{
-
-    if (!req.useragent.isDesktop){return cliRes}
-    else {return browserRes}
+function serveCorrectClient(req,cliRes,browserRes){
+    if (!req.useragent.isDesktop)
+        return cliRes
+    else
+        return browserRes
 }
 
-
-var base="/energy/api/";
-
+const base="/energy/api/";
 
 //RESPONSES
 
@@ -48,7 +46,7 @@ app.get(base+":query/:area/:resolution/:durationOption/:year([0-9]{4})?:month(-[
     var params=req.params;
     [flag,params]=helpers.parser(params);
     var type=helpers.questionDecoder(params);
-    helpers.queries(params,type)
+    helpers.query(params,type)
     res.send([params,req.params,type]);
     connection.query('SELECT "accessible" AS solution',function(err,res,fields){
         if (err) {console.log("Could not connect to SQL database.")} 
