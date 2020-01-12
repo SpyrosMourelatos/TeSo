@@ -1,7 +1,7 @@
 //1day
 message ={
-    Source: "entso-e"
-    Dataset:"" 
+    Source: "entso-e",
+    Dataset:"" ,
     AreaName:""
     AreaTypeCode:""
     MapCode:""

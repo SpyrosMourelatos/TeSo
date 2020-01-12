@@ -6,19 +6,19 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var ejs=require("ejs");
 var helpers=require("./helpers.js");
+const util = require('util');
+  
 //init sql connection
-var connection = mysql.createConnection({
+const configDb={
     host     : 'localhost',
     user     : 'root',
     password : '',
     database : 'te_so'
-});
+}
+const conn = mysql.createConnection(configDb);
+const asyncQ=util.promisify(conn.query).bind(conn);
 
-//test connection with sql
-connection.query('SELECT "accessible" AS solution',function(err,res,fields){
-    if (err) {console.log("Could not connect to SQL database.")} 
-    else {console.log("Database is :" + res[0].solution)}
-});
+
 //init express 
 var app = express();
 app.use(useragent.express());
@@ -41,21 +41,22 @@ const base="/energy/api/";
 
 //RESPONSES
 
-app.get(base+":query/:area/:resolution/:durationOption/:year([0-9]{4})?:month(-[0-9]{2})?:day(-[0-9]{2})?:format(\&format=[a-z]{3,4})?",function(req,res){
-    var flag=true;
+app.get(base+":Dataset/:area/:resolution/:durationOption/:year([0-9]{4})?:month(-[0-9]{2})?:day(-[0-9]{2})?:format(\&format=[a-z]{3,4})?",async function(req,res){
     var params=req.params;
+    
     [flag,params]=helpers.parser(params);
-    var type=helpers.questionDecoder(params);
-    helpers.query(params,type);
-    responseGreeting=serveCorrectClient(req,"Hi CLI","HI browser");
-    res.send([responseGreeting,params,req.params,type]);
-    connection.query('SELECT "accessible" AS solution',function(err,res,fields){
-        if (err) {console.log("Could not connect to SQL database.")} 
-        else {console.log("Database is :" + res[0].solution)}
-    });
+    if (flag===false)
+        res.status.send("403")
+    const type=helpers.questionDecoder(params);
+    var msg=await helpers.query(params,type,asyncQ);
+    if (params["format"]===0)
+        msg=helpers.jsonToCsv(msg);
+    whoReq=serveCorrectClient(req,"CLI","Browser");
+    Object.assign(params,{WhoRequested:whoReq ,type:type} )
+    res.send([params,msg]);
 });
 
-app.get(base+":query/:area/:resolution/:durationOption",function(req,res){
+app.get(base+":Dataset/:area/:resolution/:durationOption",function(req,res){
         var flag=true;
         var params=req.params;
         [flag,params]=helpers.parser(params)
