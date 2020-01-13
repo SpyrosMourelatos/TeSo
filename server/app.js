@@ -41,19 +41,27 @@ const base="/energy/api/";
 
 //RESPONSES
 
-app.get(base+":Dataset/:area/:resolution/:durationOption/:year([0-9]{4})?:month(-[0-9]{2})?:day(-[0-9]{2})?:format(\&format=[a-z]{3,4})?",async function(req,res){
+app.get(base+":Dataset/:area/:resolution/:durationOption/:year([0-9]{4})?:month(-[0-9]{2})?:date(-[0-9]{2})?:format(\&format=[a-z]{3,4})?",async function(req,res){
     var params=req.params;
     [flag,params]=helpers.parser(params);
     if (flag===false)
         res.status.send("403")
     const type=helpers.questionDecoder(params);
     var msg=await helpers.query(params,type,asyncQ);
-    if (params["format"]===0)
-        msg=helpers.jsonToCsv(msg);
+    //if (params["format"]===0 && flag ===true)
+        //msg=helpers.jsonToCsv(msg);
     whoReq=serveCorrectClient(req,"CLI","Browser");
     Object.assign(params,{WhoRequested:whoReq ,type:type} )
     res.send([params,msg]);
 });
+
+app.post(base+"users/new", function(req, res){
+    console.log(req.body.username);
+    console.log(req.body.password);
+    console.log(req.body.email);
+    res.send("post route test");
+});
+
 
 app.get(base+":Dataset/:area/:resolution/:durationOption",function(req,res){
         var flag=true;

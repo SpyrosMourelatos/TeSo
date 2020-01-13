@@ -40,7 +40,7 @@ function questionDecoder(params){
     const hasY=('year' in params)
     const hasM=('month' in params)
     const hasD = ('date' in params) 
-    
+    console.log(hasD,hasM,hasY)
     if (dur==="year" && ( !(hasY) || hasM || hasD ) ) return "Query needs only year"
     else if (dur==="months" &&  ( !(hasY) || !(hasM) || hasD )) return "Query needs year and month"
     else if (dur==="date" &&  ( !(hasY) || !(hasM) || !(hasD) )) return "Query needs year, month and date"
