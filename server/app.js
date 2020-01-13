@@ -43,7 +43,6 @@ const base="/energy/api/";
 
 app.get(base+":Dataset/:area/:resolution/:durationOption/:year([0-9]{4})?:month(-[0-9]{2})?:day(-[0-9]{2})?:format(\&format=[a-z]{3,4})?",async function(req,res){
     var params=req.params;
-    
     [flag,params]=helpers.parser(params);
     if (flag===false)
         res.status.send("403")
@@ -69,12 +68,14 @@ app.get(base+":query/:area/:resolution",function(req,res){
         [flag,params]=helpers.parser(params)
         res.send(["Query should contain a duration field",params])
 });
+
 app.get(base+":query/:area",function(req,res){
         var flag=true;
         var params=req.params;
         [flag,params]=helpers.parser(params)
         res.send(["Query should contain resolution field",params])
 });
+
 app.get(base+":query",function(req,res){
     var flag=true;
     var params=req.params;
@@ -82,13 +83,18 @@ app.get(base+":query",function(req,res){
     res.send(["Query should contain area field",params])
 });
 
-app.get(base,function(req,res)
-    {
+app.get(base,function(req,res){
         res.send("Welcome to our page!")
-    }
-    )
-app.get("*",function(req,res)
-{
+});
+
+app.post(base+"new", function(req, res){
+    console.log(req.body.username);
+    console.log(req.body.password);
+    console.log(req.body.email);
+    res.redirect(303, "/");
+});
+
+app.get("*",function(req,res){
     var flag=true;
     var params=req.params;
     [flag,params]=helpers.parser(params)

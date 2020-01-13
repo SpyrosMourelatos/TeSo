@@ -41,9 +41,9 @@ function questionDecoder(params){
     const hasM=('month' in params)
     const hasD = ('date' in params) 
     
-    if (params["durationOption"]==="year" && ( !(hasY) || hasM || hasD ) ) return "Query needs only year"
-    else if (params["durationOption"]==="months" &&  ( !(hasY) || !(hasM) || hasD )) return "Query needs year and month"
-    else if (params["durationOption"]==="date" &&  ( !(hasY) || !(hasM) || !(hasD) )) return "Query needs year, month and date"
+    if (dur==="year" && ( !(hasY) || hasM || hasD ) ) return "Query needs only year"
+    else if (dur==="months" &&  ( !(hasY) || !(hasM) || hasD )) return "Query needs year and month"
+    else if (dur==="date" &&  ( !(hasY) || !(hasM) || !(hasD) )) return "Query needs year, month and date"
     else return params["Dataset"]+"-"+dur
 }
 async function query(params,type,query){
@@ -120,11 +120,11 @@ function parser(params){
             return [false,temp[0]] ;
         Object.assign(ret,{ month : temp[0] } )
     }
-    if ( params['day'] != undefined ){
-        const temp= checkNumerics(params["day"],0,32)
+    if ( params['date'] != undefined ){
+        const temp= checkNumerics(params["date"],0,32)
         if (temp[1]==false) 
             return [false,temp[0]] ;
-        Object.assign(ret,{ day : temp[0] } )
+        Object.assign(ret,{ date : temp[0] } )
     }
     if ( params["format"]==="&format=csv" ) 
         Object.assign(ret,{format:1})
