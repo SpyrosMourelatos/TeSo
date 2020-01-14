@@ -146,7 +146,37 @@ function sendHTTP(action){
 		httpPutAsync(baseURL, program.moduser, program.email, program.passw);
 	}
 }
-
+//Making a helpful and nice looking --help command
+program.on('--help', function(){
+	console.log("");
+	console.log("  --scope     defines search scope");
+	console.log("");
+	console.log("  the following parameteres are reqired with --scope <value>:")
+	console.log("  	--date      defines search date");
+	console.log("  	--area      defines search area");
+	console.log("  	--timeres   defines search time resolution");
+	console.log("  	--apikey    who knows?");
+	console.log("");
+	console.log("  the following parameteres are optional with --scope <value>:")
+	console.log("  	--prodtype  defines search production type");
+	console.log("  	--format    determines a .json or .csv response formating");
+	console.log("");
+	console.log("  the following parameteres are accepted ONLY with --scope \"Admin\":")
+	console.log("  	--newuser     creates a new user");
+	console.log("  	--moduser     modifies existing user");
+	console.log("  	--newdata     new entry to be added to the database");
+	console.log("");
+	console.log("  the following parameteres are reqired with --newuser or --moduser:");
+	console.log("  	--passw      user password");
+	console.log("  	--email      user email");
+	console.log("  	--quota      available queries remaining");
+	console.log("");
+	console.log("  the following parameteres are optional with --newuser or --moduser");
+	console.log("  	--userstatus check user's status");
+	console.log("");
+	console.log("  the following parameteres are reqired with --newdata:");
+	console.log("  	--source     file source to be uploaded");
+});
 //Code execution starts here
 if(input === "energy_unknownwords" || input === "energy_unknownwords.js"){
 	console.log("Accepted parameters include:\n  --scope <value>\n  --newuser <username>\n  --moduser <username>");
