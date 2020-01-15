@@ -177,6 +177,7 @@ program.on('--help', function(){
 	console.log("  the following parameteres are reqired with --newdata:");
 	console.log("  	--source     file source to be uploaded");
 });
+
 //Code execution starts here
 if(input === "energy_unknownwords" || input === "energy_unknownwords.js"){
 	console.log("Accepted parameters include:\n  --scope <value>\n  --newuser <username>\n  --moduser <username>");
@@ -191,4 +192,3 @@ if(input === "energy_unknownwords" || input === "energy_unknownwords.js"){
 
 // New params required:
 // (newdata) required --source filename
-// --scope admin

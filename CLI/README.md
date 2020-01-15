@@ -11,4 +11,3 @@ TODO
 1. Make proper function for http put requests
 2. Implement --source param file upload
 3. Missing parsing of server response
-4. Make a proper --help command
