@@ -7,6 +7,7 @@ var path = require('path');
 var ejs=require("ejs");
 var helpers=require("./helpers.js");
 const util = require('util');
+const formidableMiddleware = require('express-formidable');
   
 //init sql connection
 const configDb={
@@ -27,7 +28,10 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
-
+app.use(formidableMiddleware({
+  encoding: 'utf-8',
+  uploadDir: ''
+}));
 
 //This func takes a request and two possible responses and it decides which to send back based on client
 function serveCorrectClient(req,cliRes,browserRes){
@@ -95,12 +99,26 @@ app.get(base,function(req,res){
         res.send("Welcome to our page!")
 });
 
+//Dummy post and put routes
 app.post(base+"new", function(req, res){
     console.log(req.body.username);
     console.log(req.body.password);
     console.log(req.body.email);
     res.redirect(303, "/");
 });
+
+app.post(base+"upload", function(req, res){
+    console.log(req.fields); // contains non-file fields
+    console.log(req.files); // contains files
+    res.status(200).send("file upload");
+});
+
+app.put(base+"users/:id", function(req, res){
+    console.log(req.body.username);
+    console.log(req.body.password);
+    console.log(req.body.email);
+    res.send("moduser");
+})
 
 app.get("*",function(req,res){
     var flag=true;

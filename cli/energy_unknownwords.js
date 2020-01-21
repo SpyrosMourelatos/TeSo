@@ -1,5 +1,7 @@
 const program = require('commander');
 var request = require('request');
+var fs = require('fs');
+var FormData = require('form-data');
 
 program.version('0.0.1');
 
@@ -8,27 +10,61 @@ var check = "";
 var action;
 var httpRequestStatus;
 var baseURL = "http://localhost:8765/energy/api/"
-
 var input = rawInput.toString().slice(rawInput.toString().search(/energy_unknownwords/), rawInput.toString().length);
 
 //Send http GET request
 function httpGetAsync(theURL, callback){
     request(theURL, function (error, response, body) {
-	  callback(body); // Print the HTML for the Google homepage.
+	  callback(body);
 	});
 }
 
 //Send http POST request
-function httpPostAsync(theURL, paramUsername, paramEmail, paramPassword){
-	request.post({
+function httpPostAsync(theURL, type, data){
+	if (type === "user"){
+		request.post({
+			url: theURL, 
+			form: {
+		    	username: data.username,
+		    	email: data.email,
+		    	password: data.password
+		    }}, 
+		    function(error, response, body){ 
+				if (!error/* && response.statusCode == 200*/) {
+			    	console.log("Your request has been successful");
+			    	httpRequestStatus = true;
+			    } else {
+			    	console.log("An error occured. Error details:");
+			    	console.log(error);
+			    	httpRequestStatus = false;
+			    }
+		});
+	} else if (type === "file"){
+		var fileStream = fs.createReadStream("testFile.txt");
+		var form = new FormData();
+		form.append('file', fs.createReadStream('testFile.txt'));
+		form.submit(theURL, function(err, res) {
+			if (!err){
+				console.log(res);
+			} else {
+				console.log("Something went wrong. Here is the error in more detail:\n"+err);
+			}
+		});
+	};
+}
+
+function httpPutAsync(theURL, data){
+	request.put({
 		url: theURL, 
 		form: {
-	    	username: paramUsername,
-	    	email: paramEmail,
-	    	password: paramPassword}}, 
+	    	username: data.username,
+	    	email: data.email,
+	    	password: data.password
+		}},
 	    function(error, response, body){ 
 			if (!error/* && response.statusCode == 200*/) {
 		    	console.log("Your request has been successful");
+		    	console.log("Server response: " + response.body);
 		    	httpRequestStatus = true;
 		    } else {
 		    	console.log("An error occured. Error details:");
@@ -36,7 +72,7 @@ function httpPostAsync(theURL, paramUsername, paramEmail, paramPassword){
 		    	httpRequestStatus = false;
 		    }
 	});
-}
+};
 
 //Add required params if input is "scope"
 function addScopeOptions(){
@@ -79,25 +115,26 @@ function addUserOptions(){
 function addOptions(string){
 	program.requiredOption('--scope <scope>', 'ActualTotalLoad || AggregatedGenerationPerType || DayAheadTotalLoadForecast || ActualvsForecast || Admin');
 	if (!string.toLowerCase().includes("admin")){
-		addScopeOptions();
 		action = "scope"
+		addScopeOptions();
 		return;
 	} else if (input.includes("newuser")){
+		action = "newuser"
 		program.requiredOption('--newuser <username>','Username for new user');
 		addUserOptions();
-		action = "newuser"
 		return;
 	} else if (input.includes("moduser")){
+		action = "moduser"
 		program.requiredOption('--moduser <username>','Username of user');
 		addUserOptions();
-		action = "moduser"
-		return
+		return;
 	} else if (input.includes("newdata")){
+		action = "newdata";
 		program.requiredOption('--newdata <dataType>', 'Data to be added to the database');
 		program.requiredOption('--source <fileName>', 'CSV file to add to database');
-		action = "newdata";
+		return;
 	} else {
-		console.log("Accepted parameters with --scope Admin include:\n  --newuser <username>\n  --moduser <username>\n  --newdata <fileName>\ntype --help for more info");
+		console.log("Accepted parameters with --scope Admin include:\n  --newuser <username>\n  --moduser <username>\n  --newdata <dataType>\ntype --help for more info");
 	}
 }
 
@@ -122,30 +159,38 @@ function sendHTTP(action){
 			//Server side "null" code
 			//baseURL += "00/";
 			//baseURL += "00/";
-		} else {
-			if (check !== "failed"){
-				console.log(check);
-				return;
-			}
-			return;
 		}
-		if (program.format === "json" || program.format === "csv")
-		baseURL += "&format="+program.format; 
+		if (program.format === "json" || program.format === "csv"){
+			baseURL += "&format="+program.format;
+		}
 		httpGetAsync(baseURL, console.log);
 	} else if (action === "newuser"){
 		baseURL += "users/new/"
-		httpPostAsync(baseURL, program.newuser, program.email, program.passw);
-		if (httpRequestStatus/* === 200 or 303 or some shit*/){
+		httpPostAsync(baseURL, "user", {
+			username: program.newuser,
+			email: program.email,
+			password: program.passw
+		});
+		if (httpRequestStatus/* === 200 or 303 or something the like*/){
 			console.log("Success!")
 			console.log("Use the --moduser parameter to modify user info.")
 		}
 	} else if (action === "moduser"){
-		var userID = "test"; //for testing purposes
+		var userID = program.apikey;
 		baseURL +="users/" + userID;
-		//Need to create said function
-		httpPutAsync(baseURL, program.moduser, program.email, program.passw);
+		httpPutAsync(baseURL, "user",{
+			username: program.moduser,
+			email: program.email,
+			password: program.passw
+		});	
+	} else if (action === "newdata"){
+		baseURL += "upload/";
+		httpPostAsync(baseURL, "file", {
+			path: program.source
+		});
 	}
 }
+
 //Making a helpful and nice looking --help command
 program.on('--help', function(){
 	console.log("");
@@ -180,15 +225,9 @@ program.on('--help', function(){
 
 //Code execution starts here
 if(input === "energy_unknownwords" || input === "energy_unknownwords.js"){
-	console.log("Accepted parameters include:\n  --scope <value>\n  --newuser <username>\n  --moduser <username>");
+	console.log("Type --help for a list of commands");
 } else {
 	addOptions(input);
 	program.parse(rawInput);
 	sendHTTP(action);
-	// console.log("------------");
-	// console.log(baseURL);
-	// console.log("------------");
 }
-
-// New params required:
-// (newdata) required --source filename

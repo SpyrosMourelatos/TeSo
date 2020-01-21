@@ -1,0 +1,29 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "command line interface for energy api",
+  "main": "energy_unknownwords.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DrunkenMastah/TeSo.git"
+  },
+  "author": "Asproulos",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^4.1.0",
+    "form-data": "^3.0.0",
+    "fs": "0.0.1-security",
+    "request": "^2.88.0"
+  },
+  "bugs": {
+    "url": "https://github.com/DrunkenMastah/TeSo/issues"
+  },
+  "homepage": "https://github.com/DrunkenMastah/TeSo#readme",
+  "devDependencies": {},
+  "keywords": [
+    "API"
+  ]
+}

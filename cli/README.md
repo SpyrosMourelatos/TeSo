@@ -1,13 +1,14 @@
-*Hopefully* a somewhat functioning command line interface
+*Hopefully* a somewhat functional command line interface
 
-Requires installation of "commander" and "request" 
+Requires installation of NodeJs
+Requires import of "commander", "request", "fs" and "form-data" libraries
+They are included in the package.json file
+Just open cmd and use:
+
 ```
-$ npm install commander
-$ npm install request
+$ npm install 
 ```
 
 
 TODO
-1. Make proper function for http put requests
-2. Implement --source param file upload
-3. Missing parsing of server response
+1. Missing parsing of server response
